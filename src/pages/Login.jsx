@@ -12,7 +12,7 @@ export function Login() {
 
   if (loading) return (
     <div className="h-screen flex items-center justify-center bg-bg">
-      <Loader2 size={24} className="text-brand animate-spin" />
+      <Loader2 size={22} className="text-white animate-spin" />
     </div>
   )
 
@@ -24,7 +24,7 @@ export function Login() {
     setSubmitting(true)
     try {
       await signIn(email, password)
-    } catch (err) {
+    } catch {
       setError('Email ou senha incorretos.')
     } finally {
       setSubmitting(false)
@@ -32,72 +32,76 @@ export function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-bg flex items-center justify-center px-4 animate-fade-in">
-      {/* Glow de fundo */}
-      <div
-        className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full opacity-20"
-        style={{ background: 'radial-gradient(circle, #7C6EFA 0%, transparent 70%)', filter: 'blur(60px)' }}
-      />
+    <div className="min-h-screen bg-bg flex items-center justify-center px-4">
+      <div className="w-full max-w-[380px]">
 
-      <div className="w-full max-w-[360px] relative">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex w-12 h-12 rounded-2xl bg-brand items-center justify-center mb-5 shadow-brand-lg">
-            <span className="text-white font-bold text-lg">SL</span>
+        {/* Logo */}
+        <div className="flex items-center gap-3 mb-10">
+          <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+            <span className="text-black font-black text-sm tracking-tight">SL</span>
           </div>
-          <h1 className="text-text-primary font-bold text-2xl tracking-tight">Boas-vindas</h1>
-          <p className="text-text-secondary text-sm mt-1.5">Entre no seu painel Sales Lab</p>
+          <span className="font-display text-white font-bold text-xl tracking-widest uppercase italic">
+            Sales Lab
+          </span>
         </div>
 
-        {/* Form card */}
-        <div className="bg-surface border border-border rounded-2xl p-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-text-secondary uppercase tracking-widest">Email</label>
-              <input
-                type="email"
-                required
-                autoFocus
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="seu@email.com"
-                className="w-full bg-surface2 border border-border rounded-xl px-3.5 py-2.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"
-              />
-            </div>
+        {/* Heading */}
+        <div className="mb-8">
+          <p className="label-caps mb-2">Acesso restrito</p>
+          <h1 className="font-display font-extrabold italic text-white uppercase"
+              style={{ fontSize: '3rem', lineHeight: '0.9' }}>
+            ENTRE NO<br />PAINEL
+          </h1>
+        </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-text-secondary uppercase tracking-widest">Senha</label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full bg-surface2 border border-border rounded-xl px-3.5 py-2.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"
-              />
-            </div>
+        {/* Form */}
+        <div className="card p-6 space-y-4">
+          <div className="space-y-1.5">
+            <label className="label-caps">Email</label>
+            <input
+              type="email"
+              required
+              autoFocus
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="seu@email.com"
+              className="w-full bg-surface2 border border-border rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-ink-muted focus:outline-none focus:border-border-light transition-colors"
+            />
+          </div>
 
-            {error && (
-              <div className="bg-danger/10 border border-danger/30 rounded-xl px-4 py-2.5">
-                <p className="text-danger text-sm font-medium">{error}</p>
-              </div>
+          <div className="space-y-1.5">
+            <label className="label-caps">Senha</label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full bg-surface2 border border-border rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-ink-muted focus:outline-none focus:border-border-light transition-colors"
+            />
+          </div>
+
+          {error && (
+            <div className="bg-danger/10 border border-danger/30 rounded-lg px-4 py-2.5">
+              <p className="text-danger text-sm font-medium">{error}</p>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="w-full bg-white hover:bg-ink-soft text-black font-bold uppercase tracking-widest text-xs rounded-lg py-3 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {submitting ? (
+              <><Loader2 size={14} className="animate-spin" />Entrando...</>
+            ) : (
+              <>Entrar <ArrowRight size={14} /></>
             )}
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full bg-brand hover:bg-brand-hover text-white font-semibold rounded-xl py-2.5 text-sm transition-all shadow-brand hover:shadow-brand-lg disabled:opacity-50 flex items-center justify-center gap-2 mt-1"
-            >
-              {submitting ? (
-                <><Loader2 size={15} className="animate-spin" />Entrando...</>
-              ) : (
-                <>Entrar<ArrowRight size={15} /></>
-              )}
-            </button>
-          </form>
+          </button>
         </div>
 
-        <p className="text-center text-text-muted text-xs mt-6">© 2026 Sales Lab Studio</p>
+        <p className="label-caps text-center mt-6">© 2026 Sales Lab Studio</p>
       </div>
     </div>
   )

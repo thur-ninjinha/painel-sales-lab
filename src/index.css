@@ -5,28 +5,53 @@
 * { box-sizing: border-box; }
 
 body {
-  background-color: #080B12;
-  color: #F0F2FF;
+  background-color: #0A0A0A;
+  color: #FFFFFF;
   font-family: 'Inter', sans-serif;
   margin: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #252D45; border-radius: 8px; }
-::-webkit-scrollbar-thumb:hover { background: #7C6EFA; }
+::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
 
 @layer components {
+  /* Cards */
   .card {
     @apply bg-surface border border-border rounded-xl;
   }
-  .card-interactive {
-    @apply bg-surface border border-border rounded-xl transition-all duration-200 hover:border-brand/40 hover:shadow-brand;
+  .card-cream {
+    @apply bg-cream border border-cream/80 rounded-xl;
   }
-  .sidebar-item {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 text-text-secondary hover:text-text-primary hover:bg-surface3;
+
+  /* Sidebar nav */
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+           text-ink-muted hover:text-ink transition-all duration-150 cursor-pointer;
   }
-  .sidebar-item-active {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 bg-brand text-white shadow-brand;
+  .nav-item-active {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+           bg-white text-black transition-all duration-150 cursor-pointer;
+  }
+
+  /* Label caps */
+  .label-caps {
+    @apply text-[10px] font-bold uppercase tracking-widest2 text-ink-muted;
+  }
+
+  /* Stat delta */
+  .delta-up   { @apply text-success text-xs font-bold; }
+  .delta-down { @apply text-danger  text-xs font-bold; }
+
+  /* Tab */
+  .tab {
+    @apply px-4 py-1.5 text-xs font-bold uppercase tracking-widest border border-border
+           text-ink-muted hover:text-ink hover:border-border-light transition-colors cursor-pointer;
+  }
+  .tab-active {
+    @apply px-4 py-1.5 text-xs font-bold uppercase tracking-widest border border-white
+           bg-white text-black cursor-pointer;
   }
 }
