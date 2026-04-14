@@ -1,11 +1,6 @@
-export function Card({ children, className = '', glow = false }) {
+export function Card({ children, className = '' }) {
   return (
-    <div className={`
-      bg-surface rounded-xl border border-border/70 p-5 shadow-card
-      transition-all duration-200 hover:border-border
-      ${glow ? 'shadow-glow-brand-sm hover:shadow-glow-brand' : ''}
-      ${className}
-    `}>
+    <div className={`card p-5 ${className}`}>
       {children}
     </div>
   )

@@ -14,37 +14,21 @@ import { format, subMonths } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
 const COLORS = {
-  receita: '#22C55E',
-  despesa: '#EF4444',
-  brand: '#6C63FF',
+  receita: '#10B981',
+  despesa: '#F43F5E',
+  brand: '#7C6EFA',
   warning: '#F59E0B',
-  lead: '#6C63FF',
+  lead: '#7C6EFA',
   em_negociacao: '#F59E0B',
-  proposta_enviada: '#A78BFA',
-  cliente: '#22C55E',
-  perdido: '#EF4444',
-}
-
-function SectionHeader({ title, action, href }) {
-  return (
-    <div className="flex items-center justify-between mb-3">
-      <div className="flex items-center gap-2.5">
-        <div className="w-[3px] h-4 bg-gradient-brand rounded-full" />
-        <h2 className="text-text-primary font-semibold text-sm tracking-tight">{title}</h2>
-      </div>
-      {action && href && (
-        <a href={href} className="flex items-center gap-1 text-brand text-xs font-medium hover:opacity-80 transition-opacity">
-          {action} <ArrowRight size={12} />
-        </a>
-      )}
-    </div>
-  )
+  proposta_enviada: '#A99BFF',
+  cliente: '#10B981',
+  perdido: '#F43F5E',
 }
 
 function ChartTooltip({ active, payload, label, formatter }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-surface2 border border-border/80 rounded-xl px-3 py-2.5 shadow-card text-xs backdrop-blur-sm">
+    <div className="bg-surface2 border border-border rounded-xl px-3 py-2.5 shadow-lg text-xs">
       {label && <p className="text-text-secondary mb-1.5 font-medium">{label}</p>}
       {payload.map((p, i) => (
         <p key={i} style={{ color: p.color ?? p.fill }} className="font-semibold">
@@ -55,12 +39,18 @@ function ChartTooltip({ active, payload, label, formatter }) {
   )
 }
 
+function SectionLabel({ children }) {
+  return (
+    <p className="text-text-secondary text-xs font-semibold uppercase tracking-widest mb-3">{children}</p>
+  )
+}
+
 function ChartCard({ title, children, empty, emptyText }) {
   return (
-    <div className="bg-surface border border-border/70 rounded-xl p-4 shadow-card transition-all duration-200 hover:border-brand/20">
-      <SectionHeader title={title} />
+    <div className="card p-4">
+      <p className="text-text-primary font-semibold text-sm mb-4">{title}</p>
       {empty ? (
-        <div className="flex items-center justify-center h-[200px] text-text-secondary text-sm">{emptyText}</div>
+        <div className="flex items-center justify-center h-[190px] text-text-secondary text-sm">{emptyText}</div>
       ) : children}
     </div>
   )
@@ -80,12 +70,12 @@ function CaixaChart({ transacoes }) {
     }
   })
   return (
-    <ChartCard title="Receitas vs Despesas (6 meses)">
-      <ResponsiveContainer width="100%" height={200}>
-        <BarChart data={data} barGap={4}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2E3248" vertical={false} />
-          <XAxis dataKey="mes" tick={{ fill: '#8B8FA8', fontSize: 11 }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: '#8B8FA8', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `R$${(v/1000).toFixed(0)}k`} width={45} />
+    <ChartCard title="Receitas vs Despesas">
+      <ResponsiveContainer width="100%" height={190}>
+        <BarChart data={data} barGap={3}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#252D45" vertical={false} />
+          <XAxis dataKey="mes" tick={{ fill: '#7B82A0', fontSize: 11 }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fill: '#7B82A0', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `R$${(v/1000).toFixed(0)}k`} width={42} />
           <Tooltip content={<ChartTooltip formatter={formatarMoeda} />} />
           <Bar dataKey="Receitas" fill={COLORS.receita} radius={[4, 4, 0, 0]} />
           <Bar dataKey="Despesas" fill={COLORS.despesa} radius={[4, 4, 0, 0]} />
@@ -103,14 +93,14 @@ function LeadsPipelineChart({ pipeline }) {
   })).filter(d => d.value > 0)
   const total = data.reduce((a, d) => a + d.value, 0)
   return (
-    <ChartCard title="Distribuição de Leads" empty={total === 0} emptyText="Nenhum lead cadastrado">
-      <ResponsiveContainer width="100%" height={200}>
+    <ChartCard title="Pipeline de Leads" empty={total === 0} emptyText="Nenhum lead cadastrado">
+      <ResponsiveContainer width="100%" height={190}>
         <PieChart>
-          <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={78} paddingAngle={3}>
+          <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={48} outerRadius={75} paddingAngle={3}>
             {data.map((entry, i) => <Cell key={i} fill={entry.color} />)}
           </Pie>
           <Tooltip content={<ChartTooltip />} />
-          <Legend iconType="circle" iconSize={8} formatter={(v) => <span style={{ color: '#8B8FA8', fontSize: 11 }}>{v}</span>} />
+          <Legend iconType="circle" iconSize={7} formatter={(v) => <span style={{ color: '#7B82A0', fontSize: 11 }}>{v}</span>} />
         </PieChart>
       </ResponsiveContainer>
     </ChartCard>
@@ -126,13 +116,13 @@ function TrafegoChart({ campanhas }) {
   }))
   return (
     <ChartCard title="Campanhas — Orçamento vs Investido" empty={data.length === 0} emptyText="Nenhuma campanha cadastrada">
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={190}>
         <BarChart data={data} layout="vertical" barGap={2}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2E3248" horizontal={false} />
-          <XAxis type="number" tick={{ fill: '#8B8FA8', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `R$${(v/1000).toFixed(0)}k`} />
-          <YAxis type="category" dataKey="nome" tick={{ fill: '#8B8FA8', fontSize: 10 }} axisLine={false} tickLine={false} width={80} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#252D45" horizontal={false} />
+          <XAxis type="number" tick={{ fill: '#7B82A0', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `R$${(v/1000).toFixed(0)}k`} />
+          <YAxis type="category" dataKey="nome" tick={{ fill: '#7B82A0', fontSize: 10 }} axisLine={false} tickLine={false} width={78} />
           <Tooltip content={<ChartTooltip formatter={formatarMoeda} />} />
-          <Bar dataKey="Orcamento" fill="#2E3248" radius={[0, 4, 4, 0]} />
+          <Bar dataKey="Orcamento" fill="#252D45" radius={[0, 4, 4, 0]} />
           <Bar dataKey="Investido" fill={COLORS.warning} radius={[0, 4, 4, 0]} />
           <Bar dataKey="Receita" fill={COLORS.receita} radius={[0, 4, 4, 0]} />
         </BarChart>
@@ -152,18 +142,33 @@ function MetasChart({ totalMetas, metasAtingidas, metas }) {
   const pct = totalMetas > 0 ? Math.round((metasAtingidas / totalMetas) * 100) : 0
   return (
     <ChartCard title="Status das Metas" empty={totalMetas === 0} emptyText="Nenhuma meta cadastrada">
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={190}>
         <PieChart>
-          <Pie data={data} dataKey="value" cx="50%" cy="50%" innerRadius={55} outerRadius={78} paddingAngle={3}>
+          <Pie data={data} dataKey="value" cx="50%" cy="50%" innerRadius={52} outerRadius={75} paddingAngle={3}>
             {data.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-            <text x="50%" y="47%" textAnchor="middle" dominantBaseline="middle" fill="#F1F2F6" fontSize={22} fontWeight="bold">{pct}%</text>
-            <text x="50%" y="60%" textAnchor="middle" dominantBaseline="middle" fill="#8B8FA8" fontSize={10}>concluídas</text>
+            <text x="50%" y="47%" textAnchor="middle" dominantBaseline="middle" fill="#F0F2FF" fontSize={20} fontWeight="700">{pct}%</text>
+            <text x="50%" y="60%" textAnchor="middle" dominantBaseline="middle" fill="#7B82A0" fontSize={10}>concluídas</text>
           </Pie>
           <Tooltip content={<ChartTooltip />} />
-          <Legend iconType="circle" iconSize={8} formatter={(v) => <span style={{ color: '#8B8FA8', fontSize: 11 }}>{v}</span>} />
+          <Legend iconType="circle" iconSize={7} formatter={(v) => <span style={{ color: '#7B82A0', fontSize: 11 }}>{v}</span>} />
         </PieChart>
       </ResponsiveContainer>
     </ChartCard>
+  )
+}
+
+function FinanceCard({ label, value, color, icon: Icon, iconBg, sub }) {
+  return (
+    <div className="card p-4 flex flex-col gap-3">
+      <div className="flex items-center gap-2">
+        <div className={`p-1.5 rounded-lg ${iconBg}`}>
+          <Icon size={13} className={color} />
+        </div>
+        <span className="text-text-secondary text-xs font-semibold uppercase tracking-widest">{label}</span>
+      </div>
+      <p className={`text-xl font-bold tracking-tight ${color}`}>{value}</p>
+      {sub && <p className={`text-xs font-medium ${sub.color}`}>{sub.text}</p>}
+    </div>
   )
 }
 
@@ -175,41 +180,57 @@ export function Dashboard() {
   const ultimasTransacoes = transacoes.slice(0, 5)
 
   return (
-    <div className="space-y-5 animate-fade-in">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard
-          label="Saldo Atual"
-          value={formatarMoeda(saldoAtual)}
-          icon={Wallet}
-          iconColor={saldoAtual >= 0 ? 'text-success' : 'text-danger'}
-          iconBg={saldoAtual >= 0 ? 'bg-success/10' : 'bg-danger/10'}
-        />
-        <StatCard label="Leads Ativos" value={totalLeads} icon={Users} />
-        <StatCard label="Campanhas Ativas" value={campanhasAtivas} icon={Megaphone} iconColor="text-warning" iconBg="bg-warning/10" />
-        <StatCard label="Metas Atingidas" value={`${metasAtingidas}/${totalMetas}`} icon={Target} iconColor="text-brand" iconBg="bg-brand/10" />
+    <div className="space-y-6 animate-fade-in">
+
+      {/* KPIs */}
+      <div>
+        <SectionLabel>Visão Geral</SectionLabel>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <StatCard
+            label="Saldo Atual"
+            value={formatarMoeda(saldoAtual)}
+            icon={Wallet}
+            iconColor={saldoAtual >= 0 ? 'text-success' : 'text-danger'}
+          />
+          <StatCard label="Leads Ativos" value={totalLeads} icon={Users} iconColor="text-brand" />
+          <StatCard label="Campanhas Ativas" value={campanhasAtivas} icon={Megaphone} iconColor="text-warning" />
+          <StatCard label="Metas Atingidas" value={`${metasAtingidas}/${totalMetas}`} icon={Target} iconColor="text-brand" />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <CaixaChart transacoes={transacoes} />
-        <LeadsPipelineChart pipeline={pipeline} />
+      {/* Gráficos linha 1 */}
+      <div>
+        <SectionLabel>Financeiro & Leads</SectionLabel>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CaixaChart transacoes={transacoes} />
+          <LeadsPipelineChart pipeline={pipeline} />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <TrafegoChart campanhas={campanhas} />
-        <MetasChart totalMetas={totalMetas} metasAtingidas={metasAtingidas} metas={metas} />
+      {/* Gráficos linha 2 */}
+      <div>
+        <SectionLabel>Campanhas & Metas</SectionLabel>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <TrafegoChart campanhas={campanhas} />
+          <MetasChart totalMetas={totalMetas} metasAtingidas={metasAtingidas} metas={metas} />
+        </div>
       </div>
 
+      {/* Últimas transações + resumo */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 bg-surface border border-border/70 rounded-xl overflow-hidden shadow-card transition-all duration-200 hover:border-brand/20">
-          <div className="px-4 py-3.5 border-b border-border/60">
-            <SectionHeader title="Últimas Transações" action="Ver todas" href="/caixa" />
+        <div className="lg:col-span-2 card overflow-hidden">
+          <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+            <p className="text-text-primary font-semibold text-sm">Últimas Transações</p>
+            <a href="/caixa" className="flex items-center gap-1 text-brand text-xs font-medium hover:opacity-80 transition-opacity">
+              Ver todas <ArrowRight size={11} />
+            </a>
           </div>
           {ultimasTransacoes.length === 0 ? (
             <p className="text-text-secondary text-sm text-center py-10">Nenhuma transação</p>
           ) : (
-            <div className="divide-y divide-border/40">
+            <div className="divide-y divide-border">
               {ultimasTransacoes.map(t => (
-                <div key={t.id} className="px-4 py-3 flex items-center justify-between gap-3 hover:bg-surface2/40 transition-colors">
+                <div key={t.id} className="px-4 py-3 flex items-center justify-between gap-3 hover:bg-surface2 transition-colors">
                   <div className="flex items-center gap-3 min-w-0">
                     <Badge status={t.tipo} />
                     <div className="min-w-0">
@@ -227,38 +248,28 @@ export function Dashboard() {
         </div>
 
         <div className="space-y-3">
-          <div className="bg-surface border border-border/70 rounded-xl p-4 shadow-card hover:border-success/25 transition-all duration-200">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="p-1.5 bg-gradient-success rounded-lg shadow-card">
-                <TrendingUp size={13} className="text-white" />
-              </div>
-              <span className="text-text-secondary text-xs uppercase tracking-wider font-semibold">Receitas</span>
-            </div>
-            <p className="text-success text-xl font-bold tracking-tight">{formatarMoeda(totalReceitas)}</p>
-          </div>
-          <div className="bg-surface border border-border/70 rounded-xl p-4 shadow-card hover:border-danger/25 transition-all duration-200">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="p-1.5 bg-gradient-danger rounded-lg shadow-card">
-                <TrendingDown size={13} className="text-white" />
-              </div>
-              <span className="text-text-secondary text-xs uppercase tracking-wider font-semibold">Despesas</span>
-            </div>
-            <p className="text-danger text-xl font-bold tracking-tight">{formatarMoeda(totalDespesas)}</p>
-          </div>
-          <div className="bg-surface border border-border/70 rounded-xl p-4 shadow-card hover:border-warning/25 transition-all duration-200">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="p-1.5 bg-gradient-warning rounded-lg shadow-card">
-                <Megaphone size={13} className="text-white" />
-              </div>
-              <span className="text-text-secondary text-xs uppercase tracking-wider font-semibold">Tráfego Investido</span>
-            </div>
-            <p className="text-warning text-xl font-bold tracking-tight">{formatarMoeda(totalInvestido)}</p>
-            {roiGeral !== null && (
-              <p className={`text-xs mt-1.5 font-medium ${roiGeral >= 0 ? 'text-success' : 'text-danger'}`}>
-                ROI: {formatarPorcentagem(roiGeral)}
-              </p>
-            )}
-          </div>
+          <FinanceCard
+            label="Receitas"
+            value={formatarMoeda(totalReceitas)}
+            color="text-success"
+            icon={TrendingUp}
+            iconBg="bg-success/15"
+          />
+          <FinanceCard
+            label="Despesas"
+            value={formatarMoeda(totalDespesas)}
+            color="text-danger"
+            icon={TrendingDown}
+            iconBg="bg-danger/15"
+          />
+          <FinanceCard
+            label="Tráfego"
+            value={formatarMoeda(totalInvestido)}
+            color="text-warning"
+            icon={Megaphone}
+            iconBg="bg-warning/15"
+            sub={roiGeral !== null ? { text: `ROI: ${formatarPorcentagem(roiGeral)}`, color: roiGeral >= 0 ? 'text-success' : 'text-danger' } : null}
+          />
         </div>
       </div>
     </div>

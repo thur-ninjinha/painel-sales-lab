@@ -2,56 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
-  background-color: #0F1117;
-  color: #F1F2F6;
+  background-color: #080B12;
+  color: #F0F2FF;
   font-family: 'Inter', sans-serif;
   margin: 0;
 }
 
-/* Scrollbar refinada */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #2E3248;
-  border-radius: 8px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #6C63FF;
-}
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #252D45; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #7C6EFA; }
 
-/* Glass utility */
 @layer components {
-  .glass {
-    @apply backdrop-blur-md bg-surface/80 border border-white/[0.06];
+  .card {
+    @apply bg-surface border border-border rounded-xl;
   }
-
-  .glass-strong {
-    @apply backdrop-blur-xl bg-surface/90 border border-white/[0.08];
+  .card-interactive {
+    @apply bg-surface border border-border rounded-xl transition-all duration-200 hover:border-brand/40 hover:shadow-brand;
   }
-
-  .gradient-border {
-    position: relative;
+  .sidebar-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 text-text-secondary hover:text-text-primary hover:bg-surface3;
   }
-  .gradient-border::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(108,99,255,0.4) 0%, transparent 60%);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+  .sidebar-item-active {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 bg-brand text-white shadow-brand;
   }
 }
