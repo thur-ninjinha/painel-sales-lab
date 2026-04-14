@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Zap } from 'lucide-react'
 
 export function Login() {
   const { session, loading, signIn } = useAuth()
@@ -32,20 +32,30 @@ export function Login() {
   }
 
   return (
-    <div className="h-screen flex items-center justify-center bg-bg px-4">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden" style={{ background: '#0F1117' }}>
+      {/* Gradiente decorativo de fundo */}
+      <div className="absolute inset-0 bg-mesh-bg pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-brand opacity-[0.06] blur-3xl rounded-full pointer-events-none" />
+
+      <div className="w-full max-w-sm relative animate-slide-up">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 bg-brand rounded-2xl flex items-center justify-center text-white font-bold text-2xl mb-4 shadow-lg shadow-brand/20">
-            SL
+          <div className="relative mb-5">
+            <div className="w-16 h-16 bg-gradient-brand rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-glow-brand">
+              SL
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-brand rounded-lg flex items-center justify-center shadow-glow-brand-sm">
+              <Zap size={11} className="text-white" />
+            </div>
           </div>
-          <h1 className="text-text-primary font-bold text-2xl">Sales Lab</h1>
-          <p className="text-text-secondary text-sm mt-1">Painel Interno — acesso restrito</p>
+          <h1 className="text-text-primary font-bold text-2xl tracking-tight">Sales Lab</h1>
+          <p className="text-text-secondary text-sm mt-1.5">Painel Interno — acesso restrito</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-surface border border-border rounded-xl p-6 space-y-4">
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-text-secondary uppercase tracking-wide">Email</label>
+        {/* Card com glass */}
+        <div className="glass-strong rounded-2xl p-6 space-y-4 shadow-card">
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-widest">Email</label>
             <input
               type="email"
               required
@@ -53,37 +63,40 @@ export function Login() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="seu@email.com"
-              className="w-full bg-surface2 border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:border-brand transition-colors"
+              className="w-full bg-surface2/60 border border-border/60 rounded-xl px-3.5 py-2.5 text-sm text-text-primary placeholder-text-secondary/60 focus:outline-none focus:border-brand/60 focus:shadow-glow-brand-sm transition-all duration-200"
             />
           </div>
 
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-text-secondary uppercase tracking-wide">Senha</label>
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-widest">Senha</label>
             <input
               type="password"
               required
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-surface2 border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:border-brand transition-colors"
+              className="w-full bg-surface2/60 border border-border/60 rounded-xl px-3.5 py-2.5 text-sm text-text-primary placeholder-text-secondary/60 focus:outline-none focus:border-brand/60 focus:shadow-glow-brand-sm transition-all duration-200"
             />
           </div>
 
           {error && (
-            <div className="bg-danger/10 border border-danger/30 rounded-lg px-3 py-2">
-              <p className="text-danger text-sm">{error}</p>
+            <div className="bg-danger/10 border border-danger/25 rounded-xl px-3.5 py-2.5">
+              <p className="text-danger text-sm font-medium">{error}</p>
             </div>
           )}
 
           <button
             type="submit"
+            onClick={handleSubmit}
             disabled={submitting}
-            className="w-full bg-brand hover:bg-brand-hover text-white font-medium rounded-lg py-2.5 text-sm transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+            className="w-full bg-gradient-brand hover:opacity-90 hover:shadow-glow-brand-sm text-white font-semibold rounded-xl py-2.5 text-sm transition-all duration-200 disabled:opacity-60 flex items-center justify-center gap-2 mt-2"
           >
-            {submitting && <Loader2 size={16} className="animate-spin" />}
-            {submitting ? 'Entrando...' : 'Entrar'}
+            {submitting && <Loader2 size={15} className="animate-spin" />}
+            {submitting ? 'Entrando...' : 'Entrar no painel'}
           </button>
-        </form>
+        </div>
+
+        <p className="text-center text-text-secondary/50 text-xs mt-6">© 2026 Sales Lab Studio</p>
       </div>
     </div>
   )

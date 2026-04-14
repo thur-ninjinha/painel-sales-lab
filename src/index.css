@@ -13,17 +13,45 @@ body {
   margin: 0;
 }
 
+/* Scrollbar refinada */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #1A1D27;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: #2E3248;
-  border-radius: 3px;
+  border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #6C63FF;
+}
+
+/* Glass utility */
+@layer components {
+  .glass {
+    @apply backdrop-blur-md bg-surface/80 border border-white/[0.06];
+  }
+
+  .glass-strong {
+    @apply backdrop-blur-xl bg-surface/90 border border-white/[0.08];
+  }
+
+  .gradient-border {
+    position: relative;
+  }
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(108,99,255,0.4) 0%, transparent 60%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
 }
