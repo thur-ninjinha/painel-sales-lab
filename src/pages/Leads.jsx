@@ -34,7 +34,7 @@ function LeadForm({ inicial, onSubmit, onCancel }) {
         <Input label="Empresa" value={form.empresa} onChange={e => set('empresa', e.target.value)} placeholder="Empresa (opcional)" />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <Input label="Email" type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="email@exemplo.com" />
+        <Input label="Email (opcional)" type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="email@exemplo.com" />
         <Input label="Telefone" value={form.telefone} onChange={e => set('telefone', e.target.value)} placeholder="(11) 99999-9999" />
       </div>
       <div className="grid grid-cols-2 gap-3">
