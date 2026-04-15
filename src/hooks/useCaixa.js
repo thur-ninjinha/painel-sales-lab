@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { logActivity } from '../lib/activity'
 
 export function useCaixa() {
   const [transacoes, setTransacoes] = useState([])
@@ -33,18 +34,22 @@ export function useCaixa() {
     const { error } = await supabase.from('transacoes').insert([data])
     if (error) throw error
     await fetchTransacoes()
+    logActivity({ action: 'criou', entity_type: 'transacao', entity_name: data.descricao, meta: { tipo: data.tipo, valor: data.valor } })
   }
 
   async function updateTransacao(id, data) {
     const { error } = await supabase.from('transacoes').update(data).eq('id', id)
     if (error) throw error
     await fetchTransacoes()
+    logActivity({ action: 'editou', entity_type: 'transacao', entity_name: data.descricao })
   }
 
   async function deleteTransacao(id) {
+    const t = transacoes.find(t => t.id === id)
     const { error } = await supabase.from('transacoes').delete().eq('id', id)
     if (error) throw error
     await fetchTransacoes()
+    logActivity({ action: 'excluiu', entity_type: 'transacao', entity_name: t?.descricao ?? '' })
   }
 
   return {

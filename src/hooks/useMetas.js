@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { format } from 'date-fns'
+import { logActivity } from '../lib/activity'
 
 export function useMetas() {
   const [funcionarios, setFuncionarios] = useState([])
@@ -31,36 +32,44 @@ export function useMetas() {
     const { error } = await supabase.from('funcionarios').insert([data])
     if (error) throw error
     await fetchAll()
+    logActivity({ action: 'adicionou', entity_type: 'funcionario', entity_name: data.nome, meta: { cargo: data.cargo } })
   }
 
   async function updateFuncionario(id, data) {
     const { error } = await supabase.from('funcionarios').update(data).eq('id', id)
     if (error) throw error
     await fetchAll()
+    logActivity({ action: 'editou', entity_type: 'funcionario', entity_name: data.nome })
   }
 
   async function deleteFuncionario(id) {
+    const f = funcionarios.find(f => f.id === id)
     const { error } = await supabase.from('funcionarios').update({ ativo: false }).eq('id', id)
     if (error) throw error
     await fetchAll()
+    logActivity({ action: 'removeu', entity_type: 'funcionario', entity_name: f?.nome ?? '' })
   }
 
   async function addMeta(data) {
     const { error } = await supabase.from('metas').insert([{ ...data, mes_referencia: mesReferencia }])
     if (error) throw error
     await fetchAll()
+    logActivity({ action: 'criou', entity_type: 'meta', entity_name: data.titulo })
   }
 
   async function updateMeta(id, data) {
     const { error } = await supabase.from('metas').update(data).eq('id', id)
     if (error) throw error
     await fetchAll()
+    logActivity({ action: 'editou', entity_type: 'meta', entity_name: data.titulo })
   }
 
   async function deleteMeta(id) {
+    const m = metas.find(m => m.id === id)
     const { error } = await supabase.from('metas').delete().eq('id', id)
     if (error) throw error
     await fetchAll()
+    logActivity({ action: 'excluiu', entity_type: 'meta', entity_name: m?.titulo ?? '' })
   }
 
   const metasPorFuncionario = funcionarios.map(f => ({

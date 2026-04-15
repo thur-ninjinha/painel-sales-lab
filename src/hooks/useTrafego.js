@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { calcularROI } from '../lib/formatters'
+import { logActivity } from '../lib/activity'
 
 export function useTrafego() {
   const [campanhas, setCampanhas] = useState([])
@@ -38,18 +39,22 @@ export function useTrafego() {
     const { error } = await supabase.from('campanhas').insert([data])
     if (error) throw error
     await fetchCampanhas()
+    logActivity({ action: 'criou', entity_type: 'campanha', entity_name: data.nome, meta: { plataforma: data.plataforma } })
   }
 
   async function updateCampanha(id, data) {
     const { error } = await supabase.from('campanhas').update(data).eq('id', id)
     if (error) throw error
     await fetchCampanhas()
+    logActivity({ action: 'editou', entity_type: 'campanha', entity_name: data.nome })
   }
 
   async function deleteCampanha(id) {
+    const c = campanhas.find(c => c.id === id)
     const { error } = await supabase.from('campanhas').delete().eq('id', id)
     if (error) throw error
     await fetchCampanhas()
+    logActivity({ action: 'excluiu', entity_type: 'campanha', entity_name: c?.nome ?? '' })
   }
 
   return {

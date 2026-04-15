@@ -1,4 +1,14 @@
 import { useState } from 'react'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  useDroppable,
+  useDraggable,
+  closestCenter,
+} from '@dnd-kit/core'
 import { useLeads, ESTAGIOS } from '../hooks/useLeads'
 import { useToast } from '../components/ui/Toast'
 import { StatCard } from '../components/ui/StatCard'
@@ -7,11 +17,12 @@ import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Input, Select, Textarea } from '../components/ui/Input'
-import { Users, Plus, Pencil, Trash2, Loader2, UserCheck, UserX, MessageSquare } from 'lucide-react'
+import { Users, Plus, Pencil, Trash2, Loader2, UserCheck, UserX, MessageSquare, GripVertical } from 'lucide-react'
 import { formatarMoeda, formatarDataCurta } from '../lib/formatters'
 
 const ORIGENS = ['Instagram', 'Indicação', 'Google', 'Site', 'LinkedIn', 'WhatsApp', 'Outro']
 
+/* ─── Lead Form ─────────────────────────────────────────────────── */
 function LeadForm({ inicial, onSubmit, onCancel }) {
   const [form, setForm] = useState({
     nome: '', empresa: '', email: '', telefone: '', origem: '', estagio: 'lead',
@@ -62,51 +73,155 @@ function LeadForm({ inicial, onSubmit, onCancel }) {
   )
 }
 
-function LeadCard({ lead, onEdit, onDelete, onMove }) {
+/* ─── Draggable Lead Card ────────────────────────────────────────── */
+function DraggableLeadCard({ lead, onEdit, onDelete, onMove, isDragOverlay = false }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: lead.id })
+
+  const style = transform
+    ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
+    : undefined
+
   return (
-    <div className="bg-surface2 border border-border rounded-lg p-3 space-y-2 hover:border-border-light transition-colors">
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`bg-surface2 border rounded-lg p-3 space-y-2 transition-all ${
+        isDragging
+          ? 'opacity-40 border-brand scale-95'
+          : isDragOverlay
+          ? 'border-brand shadow-2xl rotate-1 scale-105'
+          : 'border-border hover:border-border-light'
+      }`}
+    >
+      {/* Header row: grip + name + actions */}
+      <div className="flex items-start gap-2">
+        {/* Drag handle */}
+        <button
+          {...listeners}
+          {...attributes}
+          className="text-ink-muted hover:text-white mt-0.5 flex-shrink-0 cursor-grab active:cursor-grabbing touch-none"
+          tabIndex={-1}
+        >
+          <GripVertical size={14} />
+        </button>
+
+        <div className="flex-1 min-w-0">
           <p className="text-white text-xs font-bold truncate">{lead.nome}</p>
           {lead.empresa && <p className="text-ink-muted text-xs truncate">{lead.empresa}</p>}
         </div>
+
         <div className="flex gap-0.5 flex-shrink-0">
           <button onClick={() => onEdit(lead)} className="p-1 text-ink-muted hover:text-white rounded transition-colors"><Pencil size={11} /></button>
           <button onClick={() => onDelete(lead.id)} className="p-1 text-ink-muted hover:text-danger rounded transition-colors"><Trash2 size={11} /></button>
         </div>
       </div>
+
       <div className="flex items-center justify-between gap-2">
         {lead.origem && <span className="label-caps bg-surface border border-border rounded px-1.5 py-0.5">{lead.origem}</span>}
         {lead.valor_estimado && <span className="text-brand text-xs font-bold">{formatarMoeda(lead.valor_estimado)}</span>}
       </div>
+
       {lead.notas && <p className="text-ink-muted text-xs line-clamp-2">{lead.notas}</p>}
       <p className="text-ink-muted text-xs">{formatarDataCurta(lead.data_entrada)}</p>
 
-      {/* Stage move buttons */}
-      <div className="flex gap-1 pt-1 border-t border-border/40">
-        {ESTAGIOS.filter(e => e.key !== lead.estagio && e.key !== 'perdido').slice(0, 2).map(e => (
-          <button key={e.key} onClick={() => onMove(lead.id, e.key)}
-            className="label-caps hover:text-white border border-border hover:border-border-light rounded px-2 py-0.5 transition-colors truncate">
-            → {e.label}
-          </button>
+      {/* Quick move buttons (hidden in overlay) */}
+      {!isDragOverlay && (
+        <div className="flex gap-1 pt-1 border-t border-border/40">
+          {ESTAGIOS.filter(e => e.key !== lead.estagio && e.key !== 'perdido').slice(0, 2).map(e => (
+            <button key={e.key} onClick={() => onMove(lead.id, e.key)}
+              className="label-caps hover:text-white border border-border hover:border-border-light rounded px-2 py-0.5 transition-colors truncate">
+              → {e.label}
+            </button>
+          ))}
+          {lead.estagio !== 'perdido' && (
+            <button onClick={() => onMove(lead.id, 'perdido')}
+              className="label-caps text-danger/60 hover:text-danger border border-border/40 hover:border-danger/30 rounded px-2 py-0.5 transition-colors ml-auto">
+              Perdido
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ─── Droppable Kanban Column ────────────────────────────────────── */
+function KanbanColumn({ estagio, leads, onEdit, onDelete, onMove, isOver }) {
+  const { setNodeRef } = useDroppable({ id: estagio.key })
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`card overflow-hidden flex-shrink-0 w-64 sm:w-auto transition-colors ${
+        isOver ? 'border-brand bg-brand/5' : ''
+      }`}
+    >
+      <div className="px-3 py-3 border-b border-border flex items-center justify-between">
+        <Badge status={estagio.key} />
+        <span className="label-caps">{leads.length}</span>
+      </div>
+      <div className="p-2 space-y-2 min-h-[120px]">
+        {leads.map(lead => (
+          <DraggableLeadCard
+            key={lead.id}
+            lead={lead}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onMove={onMove}
+          />
         ))}
-        {lead.estagio !== 'perdido' && (
-          <button onClick={() => onMove(lead.id, 'perdido')}
-            className="label-caps text-danger/60 hover:text-danger border border-border/40 hover:border-danger/30 rounded px-2 py-0.5 transition-colors ml-auto">
-            Perdido
-          </button>
+        {leads.length === 0 && (
+          <div className={`flex items-center justify-center min-h-[80px] rounded-lg border-2 border-dashed transition-colors ${
+            isOver ? 'border-brand/50' : 'border-border/30'
+          }`}>
+            <p className="label-caps">{isOver ? 'Soltar aqui' : 'Vazio'}</p>
+          </div>
         )}
       </div>
     </div>
   )
 }
 
+/* ─── Main Page ──────────────────────────────────────────────────── */
 export function Leads() {
   const { leads, pipeline, totalLeads, emNegociacao, clientes, perdidos, loading, addLead, updateLead, deleteLead, moveEstagio } = useLeads()
   const toast = useToast()
   const [modalOpen, setModalOpen] = useState(false)
   const [editando, setEditando] = useState(null)
   const [deletandoId, setDeletandoId] = useState(null)
+  const [activeId, setActiveId] = useState(null)
+  const [overId, setOverId] = useState(null)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  )
+
+  const activeLead = activeId ? leads.find(l => l.id === activeId) : null
+
+  function handleDragStart({ active }) {
+    setActiveId(active.id)
+  }
+
+  function handleDragOver({ over }) {
+    setOverId(over?.id ?? null)
+  }
+
+  async function handleDragEnd({ active, over }) {
+    setActiveId(null)
+    setOverId(null)
+    if (!over) return
+
+    const lead = leads.find(l => l.id === active.id)
+    const targetColumn = ESTAGIOS.find(e => e.key === over.id)
+    if (!lead || !targetColumn || lead.estagio === targetColumn.key) return
+
+    try {
+      await moveEstagio(lead.id, targetColumn.key)
+      toast.addToast(`"${lead.nome}" movido para ${targetColumn.label}`)
+    } catch {
+      toast.addToast('Erro ao mover lead.', 'error')
+    }
+  }
 
   async function handleSubmit(data) {
     try {
@@ -153,30 +268,40 @@ export function Leads() {
       ) : leads.length === 0 ? (
         <EmptyState icon={Users} title="Nenhum lead ainda" description="Comece adicionando seu primeiro lead." action={<Button onClick={() => setModalOpen(true)}><Plus size={14} />Adicionar Lead</Button>} />
       ) : (
-        <div className="flex gap-3 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 items-start">
-          {ESTAGIOS.map(estagio => (
-            <div key={estagio.key} className="card overflow-hidden flex-shrink-0 w-64 sm:w-auto">
-              <div className="px-3 py-3 border-b border-border flex items-center justify-between">
-                <Badge status={estagio.key} />
-                <span className="label-caps">{pipeline[estagio.key]?.length ?? 0}</span>
-              </div>
-              <div className="p-2 space-y-2 min-h-[120px]">
-                {(pipeline[estagio.key] ?? []).map(lead => (
-                  <LeadCard
-                    key={lead.id}
-                    lead={lead}
-                    onEdit={l => { setEditando(l); setModalOpen(true) }}
-                    onDelete={id => setDeletandoId(id)}
-                    onMove={handleMove}
-                  />
-                ))}
-                {(pipeline[estagio.key] ?? []).length === 0 && (
-                  <p className="text-ink-muted text-xs text-center py-4">Vazio</p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 items-start">
+            {ESTAGIOS.map(estagio => (
+              <KanbanColumn
+                key={estagio.key}
+                estagio={estagio}
+                leads={pipeline[estagio.key] ?? []}
+                isOver={overId === estagio.key}
+                onEdit={l => { setEditando(l); setModalOpen(true) }}
+                onDelete={id => setDeletandoId(id)}
+                onMove={handleMove}
+              />
+            ))}
+          </div>
+
+          {/* Drag overlay — ghost card that follows cursor */}
+          <DragOverlay dropAnimation={{ duration: 150, easing: 'ease' }}>
+            {activeLead && (
+              <DraggableLeadCard
+                lead={activeLead}
+                onEdit={() => {}}
+                onDelete={() => {}}
+                onMove={() => {}}
+                isDragOverlay
+              />
+            )}
+          </DragOverlay>
+        </DndContext>
       )}
 
       <Modal isOpen={modalOpen} onClose={() => { setModalOpen(false); setEditando(null) }} title={editando ? 'Editar Lead' : 'Novo Lead'} maxWidth="max-w-xl">

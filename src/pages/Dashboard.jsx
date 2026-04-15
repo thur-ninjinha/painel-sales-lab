@@ -3,6 +3,7 @@ import { useCaixa } from '../hooks/useCaixa'
 import { useMetas } from '../hooks/useMetas'
 import { useTrafego } from '../hooks/useTrafego'
 import { useLeads, ESTAGIOS } from '../hooks/useLeads'
+import { useActivity } from '../hooks/useActivity'
 import { Badge } from '../components/ui/Badge'
 import {
   Wallet, Target, Megaphone, Users, ArrowRight,
@@ -13,7 +14,7 @@ import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Cell,
 } from 'recharts'
-import { format, subMonths, startOfMonth } from 'date-fns'
+import { format, subMonths, startOfMonth, formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
 const TABS = ['Overview', 'Analytics', 'Reports']
@@ -144,6 +145,7 @@ export function Dashboard() {
   const { totalMetas, metasAtingidas, metas } = useMetas()
   const { campanhasAtivas, roiGeral, totalInvestido, totalReceita: receitaTrafego, campanhas } = useTrafego()
   const { totalLeads, clientes, perdidos, emNegociacao, pipeline } = useLeads()
+  const { activities } = useActivity(8)
 
   /* ── Cálculos financeiros ── */
   const custosTotal     = totalDespesas + totalInvestido
@@ -443,6 +445,64 @@ export function Dashboard() {
             </a>
           </div>
         </div>
+      </div>
+
+      {/* ══════════════════════════════════════════
+          BLOCO 7 — ATIVIDADE RECENTE
+      ══════════════════════════════════════════ */}
+      <div className="card overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+          <p className="label-caps text-white">Atividade Recente</p>
+          <p className="label-caps">{activities.length} ações</p>
+        </div>
+
+        {activities.length === 0 ? (
+          <div className="py-10 text-center">
+            <p className="label-caps">Nenhuma atividade registrada ainda</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-border/40">
+            {activities.map(a => {
+              const ACTION_COLOR = {
+                criou: 'text-success', adicionou: 'text-success',
+                editou: 'text-warning', moveu: 'text-brand',
+                excluiu: 'text-danger', removeu: 'text-danger',
+              }
+              const ENTITY_LABEL = {
+                transacao: 'Transação', lead: 'Lead',
+                campanha: 'Campanha', meta: 'Meta', funcionario: 'Funcionário',
+              }
+              const color = ACTION_COLOR[a.action] ?? 'text-ink-muted'
+              const entity = ENTITY_LABEL[a.entity_type] ?? a.entity_type
+              const user = a.user_email?.split('@')[0] ?? 'Usuário'
+              const displayUser = user.charAt(0).toUpperCase() + user.slice(1)
+              const timeAgo = formatDistanceToNow(new Date(a.created_at), { addSuffix: true, locale: ptBR })
+
+              return (
+                <div key={a.id} className="flex items-center gap-4 px-5 py-3 hover:bg-surface2 transition-colors">
+                  {/* User avatar */}
+                  <div className="w-7 h-7 rounded-full bg-brand flex items-center justify-center text-white font-black flex-shrink-0" style={{ fontSize: '10px' }}>
+                    {displayUser.slice(0, 2).toUpperCase()}
+                  </div>
+                  {/* Description */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-xs">
+                      <span className="font-bold">{displayUser}</span>
+                      {' '}
+                      <span className={`font-bold ${color}`}>{a.action}</span>
+                      {' '}
+                      <span className="text-ink-muted">{entity}{a.entity_name ? `: ` : ''}</span>
+                      {a.entity_name && <span className="font-bold">{a.entity_name}</span>}
+                      {a.meta?.para && <span className="text-ink-muted"> → {a.meta.para}</span>}
+                    </p>
+                  </div>
+                  {/* Time */}
+                  <span className="label-caps flex-shrink-0">{timeAgo}</span>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
     </div>

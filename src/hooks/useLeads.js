@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { logActivity } from '../lib/activity'
 
 export const ESTAGIOS = [
   { key: 'lead', label: 'Lead' },
@@ -41,27 +42,35 @@ export function useLeads() {
     const { error } = await supabase.from('leads').insert([data])
     if (error) throw error
     await fetchLeads()
+    logActivity({ action: 'adicionou', entity_type: 'lead', entity_name: data.nome, meta: { origem: data.origem } })
   }
 
   async function updateLead(id, data) {
     const { error } = await supabase.from('leads').update(data).eq('id', id)
     if (error) throw error
     await fetchLeads()
+    logActivity({ action: 'editou', entity_type: 'lead', entity_name: data.nome })
   }
 
   async function deleteLead(id) {
+    const l = leads.find(l => l.id === id)
     const { error } = await supabase.from('leads').delete().eq('id', id)
     if (error) throw error
     await fetchLeads()
+    logActivity({ action: 'excluiu', entity_type: 'lead', entity_name: l?.nome ?? '' })
   }
 
   async function moveEstagio(id, novoEstagio) {
+    const lead = leads.find(l => l.id === id)
+    // Optimistic update
     setLeads(prev => prev.map(l => l.id === id ? { ...l, estagio: novoEstagio } : l))
     const { error } = await supabase.from('leads').update({ estagio: novoEstagio }).eq('id', id)
     if (error) {
       await fetchLeads()
       throw error
     }
+    const estagioLabel = ESTAGIOS.find(e => e.key === novoEstagio)?.label ?? novoEstagio
+    logActivity({ action: 'moveu', entity_type: 'lead', entity_name: lead?.nome ?? '', meta: { para: estagioLabel } })
   }
 
   return {
