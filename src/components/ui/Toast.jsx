@@ -30,22 +30,22 @@ export function ToastProvider({ children }) {
 
 function ToastItem({ message, type, onClose }) {
   const icons = {
-    success: <CheckCircle size={16} className="text-success flex-shrink-0" />,
-    error: <XCircle size={16} className="text-danger flex-shrink-0" />,
-    warning: <AlertCircle size={16} className="text-warning flex-shrink-0" />,
+    success: <CheckCircle size={14} className="text-success flex-shrink-0" />,
+    error:   <XCircle size={14} className="text-danger flex-shrink-0" />,
+    warning: <AlertCircle size={14} className="text-warning flex-shrink-0" />,
   }
   const borders = {
     success: 'border-success/30',
-    error: 'border-danger/30',
+    error:   'border-danger/30',
     warning: 'border-warning/30',
   }
 
   return (
-    <div className={`flex items-start gap-3 bg-surface border ${borders[type] ?? 'border-border'} rounded-xl p-4 shadow-2xl pointer-events-auto animate-in slide-in-from-right-2`}>
+    <div className={`flex items-start gap-3 card border ${borders[type] ?? 'border-border'} p-4 shadow-2xl pointer-events-auto animate-fade-in`}>
       {icons[type]}
-      <p className="text-text-primary text-sm flex-1">{message}</p>
-      <button onClick={onClose} className="text-text-secondary hover:text-text-primary transition-colors flex-shrink-0">
-        <X size={14} />
+      <p className="text-white text-xs font-medium flex-1">{message}</p>
+      <button onClick={onClose} className="text-ink-muted hover:text-ink transition-colors flex-shrink-0">
+        <X size={13} />
       </button>
     </div>
   )

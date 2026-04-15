@@ -7,11 +7,10 @@ import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { ProgressBar } from '../components/ui/ProgressBar'
 import { EmptyState } from '../components/ui/EmptyState'
-import { Input, Select, Textarea } from '../components/ui/Input'
+import { Input, Select } from '../components/ui/Input'
 import { Target, UserPlus, Plus, Pencil, Trash2, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { format, addMonths, subMonths, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { formatarMoeda, formatarPorcentagem } from '../lib/formatters'
 
 function FuncionarioForm({ inicial, onSubmit, onCancel }) {
   const [form, setForm] = useState({ nome: '', cargo: '', ...inicial })
@@ -116,56 +115,68 @@ export function Metas() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatCard label="Funcionários Ativos" value={funcionarios.length} icon={Target} />
-        <StatCard label="Metas Atingidas" value={metasAtingidas} icon={Target} iconColor="text-success" iconBg="bg-success/10" />
-        <StatCard label="Total de Metas" value={totalMetas} icon={Target} iconColor="text-brand" iconBg="bg-brand/10" />
+
+      {/* Page title */}
+      <div>
+        <p className="label-caps mb-1">Equipe</p>
+        <h1 className="font-display font-extrabold italic text-white uppercase" style={{ fontSize: '2.5rem', lineHeight: '0.95' }}>
+          METAS
+        </h1>
       </div>
 
+      {/* KPIs */}
+      <div className="card divide-y divide-border md:divide-y-0 md:divide-x md:grid md:grid-cols-3">
+        <StatCard label="Funcionários Ativos" value={funcionarios.length} icon={Target} />
+        <StatCard label="Metas Atingidas" value={metasAtingidas} icon={Target} iconColor="text-success" />
+        <StatCard label="Total de Metas" value={totalMetas} icon={Target} iconColor="text-brand" />
+      </div>
+
+      {/* Month nav + actions */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <button onClick={() => navegarMes('prev')} className="p-1.5 rounded-lg hover:bg-surface2 text-text-secondary hover:text-text-primary transition-colors">
-            <ChevronLeft size={18} />
+        <div className="flex items-center gap-1">
+          <button onClick={() => navegarMes('prev')} className="p-1.5 rounded-lg hover:bg-surface2 text-ink-muted hover:text-white transition-colors">
+            <ChevronLeft size={16} />
           </button>
-          <span className="text-text-primary font-semibold capitalize w-40 text-center">
-            {format(mesDate, 'MMMM yyyy', { locale: ptBR })}
+          <span className="label-caps text-white w-36 text-center">
+            {format(mesDate, 'MMMM yyyy', { locale: ptBR }).toUpperCase()}
           </span>
-          <button onClick={() => navegarMes('next')} className="p-1.5 rounded-lg hover:bg-surface2 text-text-secondary hover:text-text-primary transition-colors">
-            <ChevronRight size={18} />
+          <button onClick={() => navegarMes('next')} className="p-1.5 rounded-lg hover:bg-surface2 text-ink-muted hover:text-white transition-colors">
+            <ChevronRight size={16} />
           </button>
         </div>
         <div className="flex gap-2">
-          <Button variant="secondary" onClick={() => { setEditFunc(null); setModalFunc(true) }}><UserPlus size={16} />Funcionário</Button>
-          <Button onClick={() => { setEditMeta(null); setModalMeta(true) }}><Plus size={16} />Nova Meta</Button>
+          <Button variant="secondary" onClick={() => { setEditFunc(null); setModalFunc(true) }}><UserPlus size={14} />Funcionário</Button>
+          <Button onClick={() => { setEditMeta(null); setModalMeta(true) }}><Plus size={14} />Nova Meta</Button>
         </div>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-16"><Loader2 size={24} className="animate-spin text-brand" /></div>
+        <div className="flex justify-center py-16"><Loader2 size={22} className="animate-spin text-brand" /></div>
       ) : metasPorFuncionario.length === 0 ? (
         <EmptyState icon={Target} title="Nenhum funcionário" description="Adicione funcionários e defina suas metas mensais." />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {metasPorFuncionario.map(func => (
-            <div key={func.id} className="bg-surface border border-border rounded-xl p-5">
-              <div className="flex items-start justify-between mb-4">
+            <div key={func.id} className="card p-5">
+              {/* Employee header */}
+              <div className="flex items-start justify-between mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-brand/20 border border-brand/30 flex items-center justify-center text-brand font-bold text-sm">
+                  <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center text-black font-black text-xs tracking-tighter">
                     {func.nome.slice(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-text-primary font-semibold text-sm">{func.nome}</p>
-                    <p className="text-text-secondary text-xs">{func.cargo}</p>
+                    <p className="text-white font-bold text-sm">{func.nome}</p>
+                    <p className="label-caps">{func.cargo}</p>
                   </div>
                 </div>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => { setEditFunc(func); setModalFunc(true) }}><Pencil size={13} /></Button>
-                  <Button variant="ghost" size="icon" onClick={() => setDeletandoFunc(func.id)}><Trash2 size={13} className="text-danger" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => { setEditFunc(func); setModalFunc(true) }}><Pencil size={12} /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => setDeletandoFunc(func.id)}><Trash2 size={12} className="text-danger" /></Button>
                 </div>
               </div>
 
               {func.metas.length === 0 ? (
-                <p className="text-text-secondary text-xs text-center py-3">Sem metas neste mês.</p>
+                <p className="text-ink-muted text-xs text-center py-3">Sem metas neste mês.</p>
               ) : (
                 <div className="space-y-4">
                   {func.metas.map(meta => {
@@ -174,13 +185,13 @@ export function Metas() {
                       <div key={meta.id} className="space-y-2">
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex-1 min-w-0">
-                            <p className="text-text-primary text-xs font-medium truncate">{meta.titulo}</p>
-                            <p className="text-text-secondary text-xs">{meta.valor_atual} / {meta.valor_alvo} {meta.unidade}</p>
+                            <p className="text-white text-xs font-bold truncate">{meta.titulo}</p>
+                            <p className="text-ink-muted text-xs">{meta.valor_atual} / {meta.valor_alvo} {meta.unidade}</p>
                           </div>
                           <div className="flex items-center gap-1 flex-shrink-0">
                             <Badge status={meta.status} />
-                            <Button variant="ghost" size="icon" onClick={() => { setEditMeta(meta); setModalMeta(true) }}><Pencil size={12} /></Button>
-                            <Button variant="ghost" size="icon" onClick={() => setDeletandoMeta(meta.id)}><Trash2 size={12} className="text-danger" /></Button>
+                            <Button variant="ghost" size="icon" onClick={() => { setEditMeta(meta); setModalMeta(true) }}><Pencil size={11} /></Button>
+                            <Button variant="ghost" size="icon" onClick={() => setDeletandoMeta(meta.id)}><Trash2 size={11} className="text-danger" /></Button>
                           </div>
                         </div>
                         <ProgressBar value={pct} status={meta.status} />

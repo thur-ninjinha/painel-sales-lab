@@ -9,8 +9,7 @@ import { ProgressBar } from '../components/ui/ProgressBar'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Input, Select, Textarea } from '../components/ui/Input'
 import { Megaphone, Plus, Pencil, Trash2, Loader2, TrendingUp, Wallet } from 'lucide-react'
-import { formatarMoeda, formatarPorcentagem, formatarDataCurta } from '../lib/formatters'
-import { Loader2 as Spin } from 'lucide-react'
+import { formatarMoeda, formatarPorcentagem } from '../lib/formatters'
 
 const PLATAFORMAS = ['Meta Ads', 'Google Ads', 'TikTok Ads', 'Outro']
 
@@ -86,56 +85,75 @@ export function Trafego() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+      {/* Page title */}
+      <div>
+        <p className="label-caps mb-1">Marketing</p>
+        <h1 className="font-display font-extrabold italic text-white uppercase" style={{ fontSize: '2.5rem', lineHeight: '0.95' }}>
+          TRÁFEGO
+        </h1>
+      </div>
+
+      {/* KPIs */}
+      <div className="card divide-y divide-border sm:divide-y-0 sm:divide-x sm:grid sm:grid-cols-4">
         <StatCard label="Orçamento Total" value={formatarMoeda(totalOrcamento)} icon={Wallet} />
-        <StatCard label="Total Investido" value={formatarMoeda(totalInvestido)} icon={TrendingUp} iconColor="text-warning" iconBg="bg-warning/10" />
-        <StatCard label="ROI Geral" value={roiGeral !== null ? formatarPorcentagem(roiGeral) : '—'} icon={TrendingUp} iconColor={roiGeral >= 0 ? 'text-success' : 'text-danger'} iconBg={roiGeral >= 0 ? 'bg-success/10' : 'bg-danger/10'} />
+        <StatCard label="Total Investido" value={formatarMoeda(totalInvestido)} icon={TrendingUp} iconColor="text-warning" />
+        <StatCard
+          label="ROI Geral"
+          value={roiGeral !== null ? formatarPorcentagem(roiGeral) : '—'}
+          icon={TrendingUp}
+          iconColor={roiGeral >= 0 ? 'text-success' : 'text-danger'}
+        />
         <StatCard label="Campanhas Ativas" value={campanhasAtivas} icon={Megaphone} />
       </div>
 
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-text-primary font-semibold">Campanhas</h2>
-        <Button onClick={() => { setEditando(null); setModalOpen(true) }}><Plus size={16} />Nova Campanha</Button>
+        <p className="label-caps">Campanhas</p>
+        <Button onClick={() => { setEditando(null); setModalOpen(true) }}><Plus size={14} />Nova Campanha</Button>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-16"><Loader2 size={24} className="animate-spin text-brand" /></div>
+        <div className="flex justify-center py-16"><Loader2 size={22} className="animate-spin text-brand" /></div>
       ) : campanhas.length === 0 ? (
-        <EmptyState icon={Megaphone} title="Nenhuma campanha" description="Crie sua primeira campanha de tráfego pago." action={<Button onClick={() => setModalOpen(true)}><Plus size={16} />Criar Campanha</Button>} />
+        <EmptyState icon={Megaphone} title="Nenhuma campanha" description="Crie sua primeira campanha de tráfego pago." action={<Button onClick={() => setModalOpen(true)}><Plus size={14} />Criar Campanha</Button>} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {campanhas.map(c => (
-            <div key={c.id} className="bg-surface border border-border rounded-xl p-5 space-y-4">
+            <div key={c.id} className="card p-5 space-y-4">
+              {/* Campaign header */}
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <p className="text-text-primary font-semibold text-sm truncate">{c.nome}</p>
+                  <p className="text-white font-bold text-sm truncate">{c.nome}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <Badge status={c.status} />
-                    <span className="text-text-secondary text-xs">{c.plataforma}</span>
+                    <span className="label-caps">{c.plataforma}</span>
                   </div>
                 </div>
                 <div className="flex gap-1 flex-shrink-0">
-                  <Button variant="ghost" size="icon" onClick={() => { setEditando(c); setModalOpen(true) }}><Pencil size={13} /></Button>
-                  <Button variant="ghost" size="icon" onClick={() => setDeletandoId(c.id)}><Trash2 size={13} className="text-danger" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => { setEditando(c); setModalOpen(true) }}><Pencil size={12} /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => setDeletandoId(c.id)}><Trash2 size={12} className="text-danger" /></Button>
                 </div>
               </div>
 
+              {/* Budget progress */}
               <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-text-secondary">Orçamento utilizado</span>
-                  <span className="text-text-primary font-medium">{formatarMoeda(c.valor_investido)} / {formatarMoeda(c.orcamento_total)}</span>
+                <div className="flex justify-between mb-1.5">
+                  <span className="label-caps">Orçamento utilizado</span>
+                  <span className="text-white text-xs font-bold">{formatarMoeda(c.valor_investido)} / {formatarMoeda(c.orcamento_total)}</span>
                 </div>
                 <ProgressBar value={c.percentualGasto} status={c.percentualGasto >= 100 ? 'atrasada' : 'em_andamento'} showPercent={false} />
               </div>
 
+              {/* Metrics */}
               <div className="grid grid-cols-2 gap-3 pt-1 border-t border-border">
                 <div>
-                  <p className="text-text-secondary text-xs">Receita gerada</p>
-                  <p className="text-success font-semibold text-sm">{formatarMoeda(c.receita_gerada)}</p>
+                  <p className="label-caps mb-1">Receita gerada</p>
+                  <p className="text-success font-bold text-sm">{formatarMoeda(c.receita_gerada)}</p>
                 </div>
                 <div>
-                  <p className="text-text-secondary text-xs">ROI</p>
-                  <p className={`font-semibold text-sm ${c.roi === null ? 'text-text-secondary' : c.roi >= 0 ? 'text-success' : 'text-danger'}`}>
+                  <p className="label-caps mb-1">ROI</p>
+                  <p className={`font-bold text-sm ${c.roi === null ? 'text-ink-muted' : c.roi >= 0 ? 'text-success' : 'text-danger'}`}>
                     {c.roi !== null ? formatarPorcentagem(c.roi) : '—'}
                   </p>
                 </div>

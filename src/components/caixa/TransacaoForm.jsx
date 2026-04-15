@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from '../ui/Button'
 import { Input, Select } from '../ui/Input'
 import { Loader2 } from 'lucide-react'
@@ -49,18 +49,19 @@ export function TransacaoForm({ inicial, onSubmit, onCancel }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex gap-3">
+      {/* Tipo toggle */}
+      <div className="flex gap-2 p-1 bg-surface3 rounded-lg">
         {['receita', 'despesa'].map(t => (
           <button
             key={t}
             type="button"
             onClick={() => set('tipo', t)}
-            className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${
+            className={`flex-1 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-colors ${
               form.tipo === t
                 ? t === 'receita'
-                  ? 'bg-success/10 text-success border-success/30'
-                  : 'bg-danger/10 text-danger border-danger/30'
-                : 'bg-surface2 text-text-secondary border-border hover:border-brand'
+                  ? 'bg-success text-black'
+                  : 'bg-danger text-white'
+                : 'text-ink-muted hover:text-ink'
             }`}
           >
             {t === 'receita' ? 'Receita' : 'Despesa'}
