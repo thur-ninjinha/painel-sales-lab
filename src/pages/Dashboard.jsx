@@ -178,7 +178,7 @@ export function Dashboard() {
           <p className="label-caps mb-2">Overview</p>
           <h1 className="font-display font-extrabold italic text-white uppercase leading-none"
               style={{ fontSize: 'clamp(2.4rem, 6vw, 4.5rem)' }}>
-            PERFORMANCE<br />LAB
+            DASHBOARD
           </h1>
         </div>
         <div className="flex items-center">
