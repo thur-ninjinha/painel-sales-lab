@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Loader2, ArrowRight } from 'lucide-react'
+import { Brand } from '../components/Brand'
 
 export function Login() {
   const { session, loading, signIn } = useAuth()
@@ -36,13 +37,8 @@ export function Login() {
       <div className="w-full max-w-[380px]">
 
         {/* Logo */}
-        <div className="flex items-center gap-3 mb-10">
-          <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-            <span className="text-black font-black text-sm tracking-tight">SL</span>
-          </div>
-          <span className="font-display text-white font-bold text-xl tracking-widest uppercase italic">
-            Sales Lab
-          </span>
+        <div className="mb-10">
+          <Brand size="md" showWordmark />
         </div>
 
         {/* Heading */}
@@ -101,7 +97,7 @@ export function Login() {
           </button>
         </div>
 
-        <p className="label-caps text-center mt-6">© 2026 Sales Lab Studio</p>
+        <p className="label-caps text-center mt-6">© 2026 Zênite Studio</p>
       </div>
     </div>
   )

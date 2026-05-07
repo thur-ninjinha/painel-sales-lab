@@ -29,6 +29,7 @@ export default {
           faint:   '#444444',
         },
         cream: '#F2F0E8',
+        'summit-violet': '#7B5CF0',
       },
       fontFamily: {
         sans:    ['Inter', 'sans-serif'],
