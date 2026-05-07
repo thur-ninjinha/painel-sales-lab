@@ -91,7 +91,7 @@ export function Topbar({ onMenuClick }) {
           <Search size={14} className="text-ink-muted flex-shrink-0" />
           <input
             type="text"
-            placeholder="Search analytics..."
+            placeholder="Buscar..."
             className="bg-transparent text-sm text-ink-muted placeholder-ink-muted focus:outline-none focus:text-ink w-full"
           />
         </div>
@@ -148,7 +148,6 @@ export function Topbar({ onMenuClick }) {
         <div className="flex items-center gap-3">
           <div className="text-right hidden sm:block">
             <p className="text-white font-semibold text-sm leading-none">{displayName}</p>
-            <p className="label-caps mt-0.5">Sales Director</p>
           </div>
           <div className="w-9 h-9 rounded-full bg-brand flex items-center justify-center text-white text-xs font-bold ring-2 ring-border">
             {initials}

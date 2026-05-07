@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useCaixa } from '../hooks/useCaixa'
+import { useCaixa, getComprovanteUrl } from '../hooks/useCaixa'
 import { useToast } from '../components/ui/Toast'
 import { StatCard } from '../components/ui/StatCard'
 import { Modal, ConfirmModal } from '../components/ui/Modal'
@@ -8,7 +8,7 @@ import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { TransacaoForm } from '../components/caixa/TransacaoForm'
 import { formatarMoeda, formatarDataCurta } from '../lib/formatters'
-import { Wallet, TrendingUp, TrendingDown, Plus, Pencil, Trash2, Loader2 } from 'lucide-react'
+import { Wallet, TrendingUp, TrendingDown, Plus, Pencil, Trash2, Loader2, Paperclip, Eye } from 'lucide-react'
 
 export function Caixa() {
   const { transacoes, saldoAtual, totalReceitas, totalDespesas, loading, addTransacao, updateTransacao, deleteTransacao } = useCaixa()
@@ -17,19 +17,28 @@ export function Caixa() {
   const [editando, setEditando] = useState(null)
   const [deletandoId, setDeletandoId] = useState(null)
 
-  async function handleSubmit(data) {
+  async function handleSubmit(data, file, removerComprovante) {
     try {
       if (editando) {
-        await updateTransacao(editando.id, data)
+        await updateTransacao(editando.id, data, file, removerComprovante)
         toast.addToast('Transação atualizada!')
       } else {
-        await addTransacao(data)
+        await addTransacao(data, file)
         toast.addToast('Transação adicionada!')
       }
       setModalOpen(false)
       setEditando(null)
     } catch {
       toast.addToast('Erro ao salvar transação.', 'error')
+    }
+  }
+
+  async function abrirComprovante(path) {
+    try {
+      const url = await getComprovanteUrl(path)
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } catch {
+      toast.addToast('Não foi possível abrir o comprovante.', 'error')
     }
   }
 
@@ -84,7 +93,7 @@ export function Caixa() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  {['Data', 'Tipo', 'Categoria', 'Descrição', 'Valor', ''].map(h => (
+                  {['Data', 'Tipo', 'Categoria', 'Descrição', 'Valor', 'Anexo', ''].map(h => (
                     <th key={h} className="text-left px-4 py-3 label-caps">{h}</th>
                   ))}
                 </tr>
@@ -98,6 +107,21 @@ export function Caixa() {
                     <td className="px-4 py-3 text-white text-xs">{t.descricao}</td>
                     <td className={`px-4 py-3 font-bold text-xs whitespace-nowrap ${t.tipo === 'receita' ? 'text-success' : 'text-danger'}`}>
                       {t.tipo === 'receita' ? '+' : '-'}{formatarMoeda(t.valor)}
+                    </td>
+                    <td className="px-4 py-3">
+                      {t.comprovante_path ? (
+                        <button
+                          onClick={() => abrirComprovante(t.comprovante_path)}
+                          className="inline-flex items-center gap-1 text-brand hover:text-brand-hover transition-colors"
+                          title={t.comprovante_nome ?? 'Ver comprovante'}
+                          aria-label="Ver comprovante"
+                        >
+                          <Paperclip size={13} />
+                          <Eye size={13} />
+                        </button>
+                      ) : (
+                        <span className="text-ink-faint text-xs">—</span>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1 justify-end">

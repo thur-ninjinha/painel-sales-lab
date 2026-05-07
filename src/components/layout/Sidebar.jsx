@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { LayoutDashboard, Wallet, Target, Megaphone, Users, Settings, LogOut, X } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
+import { Brand } from '../Brand'
 
 const NAV_MAIN = [
   { to: '/',        icon: LayoutDashboard, label: 'Dashboard' },
@@ -29,14 +30,7 @@ export function Sidebar({ open, onClose }) {
 
         {/* Logo */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-border">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-black font-black text-sm tracking-tight">SL</span>
-            </div>
-            <span className="font-display text-white font-bold text-lg tracking-widest uppercase italic">
-              Sales Lab
-            </span>
-          </div>
+          <Brand size="sm" showWordmark />
           <button onClick={onClose} className="lg:hidden text-ink-muted hover:text-ink p-1 rounded">
             <X size={16} />
           </button>
@@ -44,7 +38,7 @@ export function Sidebar({ open, onClose }) {
 
         {/* Nav principal */}
         <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-          <p className="label-caps px-3 mb-3">Main Menu</p>
+          <p className="label-caps px-3 mb-3">Menu Principal</p>
           {NAV_MAIN.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
