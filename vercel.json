@@ -1,5 +1,11 @@
 {
+  "functions": {
+    "api/carrossel/generate.js": { "memory": 1024, "maxDuration": 60 },
+    "api/carrossel/regenerate-slide.js": { "memory": 1024, "maxDuration": 60 },
+    "api/carrossel/regenerate-all.js": { "memory": 1024, "maxDuration": 60 },
+    "api/carrossel/export.js": { "memory": 1024, "maxDuration": 60, "includeFiles": "api/_lib/fonts/**" }
+  },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
