@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Wallet, Target, Megaphone, Users, Settings, LogOut, X } from 'lucide-react'
+import { LayoutDashboard, Wallet, Target, Megaphone, Users, Settings, LogOut, X, Images } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { Brand } from '../Brand'
 
@@ -9,6 +9,7 @@ const NAV_MAIN = [
   { to: '/metas',   icon: Target,          label: 'Metas' },
   { to: '/trafego', icon: Megaphone,       label: 'Tráfego Pago' },
   { to: '/leads',   icon: Users,           label: 'Leads' },
+  { to: '/carrossel', icon: Images,        label: 'Carrossel' },
 ]
 
 export function Sidebar({ open, onClose }) {
