@@ -30,13 +30,6 @@ export default {
         },
         cream: '#F2F0E8',
         'summit-violet': '#7B5CF0',
-        'studio-notes': {
-          bg:       '#0B0B12',
-          elevated: '#101019',
-          fg:       '#F0EBE0',
-          muted:    '#B8B0A0',
-          gold:     '#C9A96E',
-        },
       },
       fontFamily: {
         sans:    ['Inter', 'sans-serif'],

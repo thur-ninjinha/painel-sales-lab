@@ -9,9 +9,6 @@ import { Caixa } from './pages/Caixa'
 import { Metas } from './pages/Metas'
 import { Trafego } from './pages/Trafego'
 import { Leads } from './pages/Leads'
-import { CarrosselList } from './pages/CarrosselList'
-import { CarrosselNovo } from './pages/CarrosselNovo'
-import { CarrosselPreview } from './pages/CarrosselPreview'
 import { Loader2 } from 'lucide-react'
 
 function ProtectedRoute({ children }) {
@@ -42,9 +39,6 @@ function AppRoutes() {
         <Route path="metas" element={<Metas />} />
         <Route path="trafego" element={<Trafego />} />
         <Route path="leads" element={<Leads />} />
-        <Route path="carrossel" element={<CarrosselList />} />
-        <Route path="carrossel/novo" element={<CarrosselNovo />} />
-        <Route path="carrossel/:id" element={<CarrosselPreview />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
