@@ -5,6 +5,7 @@ import { useTrafego } from '../hooks/useTrafego'
 import { useLeads, ESTAGIOS } from '../hooks/useLeads'
 import { useActivity } from '../hooks/useActivity'
 import { Badge } from '../components/ui/Badge'
+import { MetasLucroSection } from '../components/dashboard/MetasLucroSection'
 import {
   Wallet, Target, Megaphone, Users, ArrowRight,
   TrendingUp, TrendingDown, Minus, ArrowUpRight, ArrowDownRight,
@@ -190,6 +191,9 @@ export function Dashboard() {
           ))}
         </div>
       </div>
+
+      {/* ── Metas de lucro ── */}
+      <MetasLucroSection transacoes={transacoes} />
 
       {/* ══════════════════════════════════════════
           BLOCO 1 — RESULTADO FINANCEIRO (destaque)
