@@ -470,11 +470,13 @@ export function Dashboard() {
               const ACTION_COLOR = {
                 criou: 'text-success', adicionou: 'text-success',
                 editou: 'text-warning', moveu: 'text-brand',
+                arquivou: 'text-warning',
                 excluiu: 'text-danger', removeu: 'text-danger',
               }
               const ENTITY_LABEL = {
                 transacao: 'Transação', lead: 'Lead',
                 campanha: 'Campanha', meta: 'Meta', funcionario: 'Funcionário',
+                meta_lucro: 'Meta de lucro',
               }
               const color = ACTION_COLOR[a.action] ?? 'text-ink-muted'
               const entity = ENTITY_LABEL[a.entity_type] ?? a.entity_type

@@ -39,7 +39,7 @@ export function MetaLucroForm({ inicial, onSubmit, onCancel }) {
       setErro('Defina uma data limite.')
       return
     }
-    if (!inicial && form.data_limite <= todayIso()) {
+    if (form.data_limite <= todayIso()) {
       setErro('Data limite deve ser futura.')
       return
     }
